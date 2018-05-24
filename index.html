@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>HighChart with Select All</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>    
+</head>
+<body>
+    <div id="chart_container" style="height:400px;width:700px;position:relative;padding: 33px 56px 61px 344px;"></div>
+    <script>
+         $('#chart_container').highcharts({
+            chart: {
+                type: 'line',
+                zoomType: 'xy',
+                events: {
+                    load: function() {
+                        // creating the checkbox underneath highchart legends
+                        var checkbox = this.renderer.html('<input type="checkbox"  id="pointhandler" onclick="checkPointHandler();" checked></input><label style="font-family:sans-serif;" for="pointhandler" title="">Select All</label>')
+                            .css({
+                                width: '250px',
+                                fontSize: '15px'                                
+                            })
+                            .attr({
+                                'stroke': 'silver',
+                                'stroke-width': 1,
+                                'r': 2,
+                                'padding': 5
+                            })
+                            .add();
+                        // You can change the possition of the checkbox from here
+                        checkbox.align(Highcharts.extend(checkbox.getBBox(), {
+                            align: 'left',
+                            x: 15, // offset
+                            verticalAlign: 'bottom',
+                            y: 32 // offset
+                        }), null, 'spacingBox');
+
+                    }
+                }
+            },
+            title: {
+                text: 'Electricity Utilization'
+            },
+            plotOptions: {
+                series: {
+                    events: {
+                        legendItemClick: function() {                                                   
+                            setTimeout(checkSelectedPoints,50); // set timeout is given to make the click event asynchronous
+                        }
+                    }
+                }
+            },
+            series: [{
+                    data:[95.8405546,94.7429232,95.8983247,96.3604853,95.6672444,92.6632005,95.8983247,93.1253611,94.8584633,97.2848065,97.2848065,97.5736568,93.7608319,95.1473137,96.0716349,96.938186,94.1074523,94.4540728,92.1432698,88.7348354,89.8902369,85.5574812,86.0196418,87.2328134,84.1132293,85.2108608,86.3084922,88.5615251,88.7926054,86.6551127,89.196996,88.0415945,91.1034084,90.6412478,87.6372039,87.3483536,87.3483536,87.9260543,87.6372039,88.7926054]
+                },{
+                    data:[77.9279279,79.954955,78.0931587,77.874818,78.3842795,79.4759825,80.9869376,79.5355588,77.7213353,81.6400581,81.8641618,82.6589595,80.9971098,81.8641618,83.2369942,81.3583815,76.1560694,77.3121387,80.1300578,78.9017341,79.4797688,78.3959538,79.1184971,79.3352601,77.0231214,76.6618497,76.0115607,76.9508671,78.6127168,77.3121387,76.4450867,76.3728324,77.3121387,76.3728324,75.7947977,77.1676301,76.0115607,74.566474,74.2774566,73.6271676]
+                },{
+                    data:[88.7475538,89.3998695,90.8675799,90.9980431,91.1937378,92.8245271,93.2159165,92.1069798,91.2589693,91.4872798,91.8134377,91.8786693,91.9439008,91.7482061,90.8349641,86.5666775,87.5448321,86.4688621,87.1535703,87.1861754,86.7623084,86.7623084,89.5989566,89.892403,88.9794588,88.8816433,89.2403,88.5555918,88.2947506,88.7186175,88.4251712,88.0013042,87.740463,88.0665145,87.5774372,87.9034888,87.6466754,87.3207301,86.9340233,86.0608021]
+                }           
+            ]
+        });
+        // function to keep track of individual item click and update Select All Checkbox against
+        function checkSelectedPoints(){                                       
+            let chart = $("#chart_container").highcharts();
+            let series = chart.series;
+            let srslength = series.length;
+            let _vsCount = 0;
+            for (let i = 0; i < series.length; i++) {
+                if (series[i].visible == true) {
+                    _vsCount++;
+                }
+            }                                                 
+            if(_vsCount != srslength){
+                $('#pointhandler').removeAttr('checked');
+            }else {
+                $('#pointhandler').attr('checked','checked');
+            }
+        }
+        // Checkbox onclick function
+        function checkPointHandler(){                                                 
+            let _handler_value = $('#pointhandler').is(":checked")?1:0;
+            if (_handler_value>0){                
+                selectAllPoints(); // if value > 0, select all legends
+            }else {
+                deselectAllPoints(); // if value = 0, deselect all legends
+            }                        
+        }
+        // Select all legends 
+        function selectAllPoints() {
+            var chart = $("#chart_container").highcharts();
+            for (i = 0; i < chart.series.length; i++) {
+                chart.series[i].show();                    
+            }
+        }
+        // Deselect all legends                
+        function deselectAllPoints(){
+            var chart=$("#chart_container").highcharts();
+            for(i=0; i < chart.series.length; i++) {
+                chart.series[i].hide();                       
+            }
+        }
+    </script>
+</body>
+</html>
